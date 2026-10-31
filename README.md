@@ -10,12 +10,7 @@ A lightweight and fast GUI/CLI tool designed to search, filter, and download Min
 
 ## 🚀 Installation & Usage
 
-### Option 1: Download Pre-compiled Executable (Recommended)
+### Download Pre-compiled Executable
 1. Go to the [Releases](https://github.com/atakqn819/Modrinth-Mod-Downloader/releases) page.
 2. Download the latest `ModrinthModManager.exe` file.
 3. Run the executable to start managing your mods.
-
-### Option 2: Run from Source (For Developers)
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/atakqn819/Modrinth-Mod-Downloader.git](https://github.com/atakqn819/Modrinth-Mod-Downloader.git)
