@@ -39,3 +39,9 @@ If you prefer running the Python script directly:
    ```bash
    git clone [https://github.com/atakqn819/Modrinth-Mod-Downloader.git](https://github.com/atakqn819/Modrinth-Mod-Downloader.git)
    cd Modrinth-Mod-Downloader
+## 🎬 Demo
+
+<video width="100%" controls>
+  <source src="videos/Screen Record 2026-11-01 115446.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
