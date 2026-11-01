@@ -12,7 +12,7 @@ import zipfile
 import io
 
 API_BASE = "https://api.modrinth.com/v2"
-DEFAULT_HEADERS = {"User-Agent": "ModrinthUniverseDownloader/1.1.0 (contact@modrinthdownloader.local)"}
+DEFAULT_HEADERS = {"User-Agent": "ModrinthUniverseDownloader/1.2.0 (contact@modrinthdownloader.local)"}
 
 class ModrinthAPI:
     def __init__(self, gv="26.3", loader="fabric"):

@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """
-Modrinth Mod Manager v1.1.1 (Official Release)
+Modrinth Mod Manager v1.2 (Official Release)
 ==============================================
 High-Performance Minecraft Content Hub & Installer
+- Multi-Version Fabric Support: 26.3, 26.2, 26.1.2, 26.1.1, 26.1
 - 5 Content Types: Mods, Resource Packs, Data Packs, Shaders, Modpacks (20,000+ items)
 - 5 Distinct Themes: Modern Emerald, Classic Dark, Midnight Cyber, Amethyst Purple, Solar Light
 - 6 Languages: English (default), Italian, French, German, Spanish, Turkish
 - Instant SQLite WAL caching & zero-lag pagination
 - Auto directory detection for Mods, Packs, Shaders, Datapacks (Manual for Modpacks)
 - Double-click full overview & direct 1-click download
-- Interactive 5-step tutorial & comprehensive v1.1.1 Patch Notes
+- Interactive 5-step tutorial & comprehensive v1.2 Patch Notes
 """
 
 import sys
@@ -41,6 +42,7 @@ from ui.gui_components import (
     ItemDetailModal, WelcomeModal, TutorialModal, PatchNotesModal
 )
 
+SUPPORTED_VERSIONS = ["26.3", "26.2", "26.1.2", "26.1.1", "26.1"]
 DEFAULT_GV = "26.3"
 DEFAULT_LOADER = "fabric"
 PAGE_SIZE = 100
@@ -112,7 +114,12 @@ class ModrinthApp(ctk.CTk):
         self.minsize(1150, 720)
         self.configure(fg_color=self.theme["bg"])
 
-        self.api = ModrinthAPI(gv=DEFAULT_GV, loader=DEFAULT_LOADER)
+        saved_gv = self.db.get_setting("game_version", DEFAULT_GV)
+        if saved_gv not in SUPPORTED_VERSIONS:
+            saved_gv = DEFAULT_GV
+        self.current_gv = saved_gv
+
+        self.api = ModrinthAPI(gv=self.current_gv, loader=DEFAULT_LOADER)
         self.downloading = False
         self.cancel_flag = False
         self.search_timer = None
@@ -183,7 +190,7 @@ class ModrinthApp(ctk.CTk):
         left.pack(side="left")
         self.logo_lbl = ctk.CTkLabel(left, text="⛏  Modrinth Mod Manager", font=("Segoe UI", 18, "bold"), text_color=self.theme["accent"])
         self.logo_lbl.pack(side="left")
-        self.ver_tag = ctk.CTkLabel(left, text="  v1.1.1  ", font=("Segoe UI", 10, "bold"), fg_color=self.theme["elevated"], text_color=self.theme["accent_tx"], corner_radius=6)
+        self.ver_tag = ctk.CTkLabel(left, text="  v1.2  ", font=("Segoe UI", 10, "bold"), fg_color=self.theme["elevated"], text_color=self.theme["accent_tx"], corner_radius=6)
         self.ver_tag.pack(side="left", padx=(8, 12))
 
         status_txt = "● Online" if self.is_online else "○ Offline"
@@ -240,13 +247,15 @@ class ModrinthApp(ctk.CTk):
         )
         self.tut_btn.pack(side="left", padx=(0, 6))
 
-        # Version input
+        # Version selector ComboBox (Fabric 26.3, 26.2, 26.1.2, 26.1.1, 26.1)
         ctk.CTkLabel(right, text="MC", font=("Segoe UI", 10, "bold"), text_color=self.theme["txt3"]).pack(side="left", padx=(4, 4))
-        self.ver_entry = ctk.CTkEntry(
-            right, width=50, height=30, corner_radius=6, font=("Segoe UI", 10, "bold"),
-            justify="center", fg_color=self.theme["elevated"], border_color=self.theme["border"], text_color=self.theme["txt"]
+        self.ver_entry = ctk.CTkComboBox(
+            right, values=SUPPORTED_VERSIONS, width=82, height=30, corner_radius=8,
+            font=("Segoe UI", 10, "bold"), fg_color=self.theme["elevated"], border_color=self.theme["border"],
+            dropdown_fg_color=self.theme["card"], dropdown_hover_color=self.theme["hover"],
+            dropdown_text_color=self.theme["txt"], state="readonly", command=self._on_version_change
         )
-        self.ver_entry.insert(0, DEFAULT_GV)
+        self.ver_entry.set(self.current_gv)
         self.ver_entry.pack(side="left", padx=(0, 6))
 
         self.loader_badge = ctk.CTkLabel(
@@ -513,12 +522,27 @@ class ModrinthApp(ctk.CTk):
         self.status_lbl = ctk.CTkLabel(self.sb, text=i18n.t("status_ready"), font=("Segoe UI", 9), text_color=self.theme["txt3"])
         self.status_lbl.pack(side="left", padx=16)
 
-        ctk.CTkLabel(self.sb, text="Modrinth Mod Manager v1.1.1  ·  Official Release", font=("Segoe UI", 9), text_color=self.theme["txt3"]).pack(side="right", padx=16)
+        ctk.CTkLabel(self.sb, text="Modrinth Mod Manager v1.2  ·  Official Release", font=("Segoe UI", 9), text_color=self.theme["txt3"]).pack(side="right", padx=16)
 
     def _st(self, msg):
         self.status_lbl.configure(text=msg)
 
-    # ─── Theme & Language Switching ──────────────────────────────────────────
+    # ─── Version, Theme & Language Switching ─────────────────────────────────
+    def _on_version_change(self, selected_gv):
+        if selected_gv in SUPPORTED_VERSIONS and selected_gv != self.current_gv:
+            self.current_gv = selected_gv
+            self.api.gv = selected_gv
+            self.db.set_setting("game_version", selected_gv)
+            self._log(f"🔄 Switched Minecraft Fabric version to {selected_gv}")
+            self._st(f"Switched to Fabric {selected_gv}")
+            for tc in self.tabs.values():
+                tc.page = 1
+                tc.selected_category = "All"
+                raw_cats = self.db.get_categories(tc.project_type, version=self.current_gv)
+                cat_labels = [i18n.t("all_categories")] + [i18n.t_cat(c) for c in raw_cats]
+                tc.cat_menu.configure(values=cat_labels)
+                tc.cat_menu.set(i18n.t("all_categories"))
+                self._render_page(tc)
     def _on_theme_change(self, theme_name):
         if theme_name in THEMES and theme_name != self.current_theme_name:
             self.current_theme_name = theme_name
@@ -563,7 +587,7 @@ class ModrinthApp(ctk.CTk):
         self._st(i18n.t("status_ready"))
 
         for tc in self.tabs.values():
-            raw_cats = self.db.get_categories(tc.project_type)
+            raw_cats = self.db.get_categories(tc.project_type, version=self.current_gv)
             cat_labels = [i18n.t("all_categories")] + [i18n.t_cat(c) for c in raw_cats]
             tc.cat_menu.configure(values=cat_labels)
             tc.cat_menu.set(i18n.t("all_categories"))
@@ -581,21 +605,22 @@ class ModrinthApp(ctk.CTk):
     # ─── Data Loading & Pagination ───────────────────────────────────────────
     def _load_all_tabs(self):
         for tc in self.tabs.values():
-            raw_cats = self.db.get_categories(tc.project_type)
+            raw_cats = self.db.get_categories(tc.project_type, version=self.current_gv)
             cat_labels = [i18n.t("all_categories")] + [i18n.t_cat(c) for c in raw_cats]
             tc.cat_menu.configure(values=cat_labels)
             tc.cat_menu.set(i18n.t("all_categories"))
             self._render_page(tc)
 
     def _render_page(self, tc):
-        tc.total_count = self.db.get_count(tc.project_type, search=tc.search_query, category=tc.selected_category)
+        tc.total_count = self.db.get_count(tc.project_type, search=tc.search_query, category=tc.selected_category, version=self.current_gv)
         tc.total_pages = max(1, (tc.total_count + PAGE_SIZE - 1) // PAGE_SIZE)
         tc.page = max(1, min(tc.page, tc.total_pages))
 
         offset = (tc.page - 1) * PAGE_SIZE
         tc.current_items = self.db.query_items(
             tc.project_type, search=tc.search_query, category=tc.selected_category,
-            sort_by=tc.sort_by, sort_desc=tc.sort_desc, limit=PAGE_SIZE, offset=offset
+            sort_by=tc.sort_by, sort_desc=tc.sort_desc, limit=PAGE_SIZE, offset=offset,
+            version=self.current_gv
         )
 
         page_str = i18n.t("page_indicator", cur=tc.page, tot=tc.total_pages, count=f"{tc.total_count:,}")
@@ -657,7 +682,7 @@ class ModrinthApp(ctk.CTk):
             tc.selected_category = "All"
         else:
             # Reverse lookup localized category back to key
-            raw_cats = self.db.get_categories(tc.project_type)
+            raw_cats = self.db.get_categories(tc.project_type, version=self.current_gv)
             matched = next((c for c in raw_cats if i18n.t_cat(c) == value), value)
             tc.selected_category = matched
 
@@ -1121,13 +1146,13 @@ class ModrinthApp(ctk.CTk):
     def _online_sync_worker(self):
         try:
             from core import sync_catalog
-            sync_catalog.sync_all(callback=self._sync_progress_cb)
+            sync_catalog.sync_all(gv=self.current_gv, callback=self._sync_progress_cb)
             self.after(0, self._sync_done, True, "Catalog successfully updated!")
         except Exception as e:
             self.after(0, self._sync_done, False, str(e))
 
     def _sync_progress_cb(self, ptype, page, max_pages, type_sub, total):
-        self.after(0, self._st, f"🔄 Syncing {ptype}: Page {page}/{max_pages} ({total:,} items)")
+        self.after(0, self._st, f"🔄 Syncing {ptype} (MC {self.current_gv}): Page {page}/{max_pages} ({total:,} items)")
 
     def _sync_done(self, success, msg):
         self.sync_btn.configure(state="normal")
@@ -1135,7 +1160,7 @@ class ModrinthApp(ctk.CTk):
             self._log("✅ Live sync completed.")
             self._st("✅ Sync complete. Reloading catalog...")
             self._load_all_tabs()
-            messagebox.showinfo("Sync Complete", "All missing and updated items have been restored into local storage!")
+            messagebox.showinfo("Sync Complete", f"All items for Fabric {self.current_gv} have been restored into local storage!")
         else:
             self._log(f"❌ Sync failed: {msg}")
             self._st(f"❌ Error: {msg}")
@@ -1143,12 +1168,12 @@ class ModrinthApp(ctk.CTk):
 
     def _background_check_updates(self):
         time.sleep(2)
-        total_in_db = self.db.get_count("mod")
-        if total_in_db < 8000:
-            self.after(0, self._log, "ℹ Background check: Restoring missing mods from Modrinth...")
+        total_in_db = self.db.get_count("mod", version=self.current_gv)
+        if total_in_db < 6000:
+            self.after(0, self._log, f"ℹ Background check: Restoring missing mods for MC {self.current_gv} from Modrinth...")
             try:
                 from core import sync_catalog
-                sync_catalog.sync_all()
+                sync_catalog.sync_all(gv=self.current_gv)
                 self.after(0, self._load_all_tabs)
             except:
                 pass

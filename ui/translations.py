@@ -138,7 +138,7 @@ CATEGORY_NAMES = {
 
 TRANSLATIONS = {
     "en": {
-        "app_title": "Modrinth Mod Manager v1.1.1",
+        "app_title": "Modrinth Mod Manager v1.2",
         "app_subtitle": "Ultimate Minecraft Content Hub & Installer",
         "tab_mods": "⚙ Mods",
         "tab_resourcepacks": "🎨 Resource Packs",
@@ -186,7 +186,7 @@ TRANSLATIONS = {
         "modal_btn_download": "⬇ Download This Item",
         "modal_btn_web": "🌐 View on Modrinth",
         "modal_tech_specs": "Technical Specifications",
-        "welcome_title": "Welcome to Modrinth Mod Manager v1.1.1",
+        "welcome_title": "Welcome to Modrinth Mod Manager v1.2",
         "welcome_desc": "Your high-speed hub for Fabric Minecraft! Browse and install 20,000+ verified Mods, Resource Packs, Data Packs, Shaders, and Modpacks with instant SQLite caching and smart directory auto-detection.",
         "welcome_net_online": "● Internet Connected: Modrinth Live Sync Active",
         "welcome_net_offline": "○ Working Offline: Using Fast Local Catalog Cache",
@@ -206,7 +206,7 @@ TRANSLATIONS = {
         "patch_notes_title": "📋 Modrinth Mod Manager — Patch Notes",
     },
     "it": {
-        "app_title": "Modrinth Mod Manager v1.1.1",
+        "app_title": "Modrinth Mod Manager v1.2",
         "app_subtitle": "Hub di Contenuti e Installatore Minecraft",
         "tab_mods": "⚙ Mod",
         "tab_resourcepacks": "🎨 Pacchetti Risorse",
@@ -254,7 +254,7 @@ TRANSLATIONS = {
         "modal_btn_download": "⬇ Scarica Questo Elemento",
         "modal_btn_web": "🌐 Apri su Modrinth",
         "modal_tech_specs": "Specifiche Tecniche",
-        "welcome_title": "Benvenuto in Modrinth Mod Manager v1.1.1",
+        "welcome_title": "Benvenuto in Modrinth Mod Manager v1.2",
         "welcome_desc": "Il tuo gestore ad alte prestazioni per Minecraft Fabric! Oltre 20.000 Mod, Pacchetti Risorse, Datapack, Shader e Modpack con caricamento istantaneo SQLite.",
         "welcome_net_online": "● Connesso a Internet: Sincronizzazione attiva",
         "welcome_net_offline": "○ Non connesso: Utilizzo catalogo locale veloce",
@@ -274,7 +274,7 @@ TRANSLATIONS = {
         "patch_notes_title": "📋 Modrinth Mod Manager — Note di Rilascio",
     },
     "fr": {
-        "app_title": "Modrinth Mod Manager v1.1.1",
+        "app_title": "Modrinth Mod Manager v1.2",
         "app_subtitle": "Gestionnaire et Installateur de Contenus Minecraft",
         "tab_mods": "⚙ Mods",
         "tab_resourcepacks": "🎨 Packs de Ressources",
@@ -322,7 +322,7 @@ TRANSLATIONS = {
         "modal_btn_download": "⬇ Télécharger Cet Élément",
         "modal_btn_web": "🌐 Ouvrir sur Modrinth",
         "modal_tech_specs": "Spécifications Techniques",
-        "welcome_title": "Bienvenue sur Modrinth Mod Manager v1.1.1",
+        "welcome_title": "Bienvenue sur Modrinth Mod Manager v1.2",
         "welcome_desc": "Votre hub haute performance pour Minecraft Fabric ! Explorez plus de 20 000 Mods, Packs de Ressources, Datapacks, Shaders et Modpacks avec base SQLite ultra-rapide.",
         "welcome_net_online": "● Connecté à Internet : Synchronisation active",
         "welcome_net_offline": "○ Mode Hors-ligne : Utilisation du catalogue local rapide",
@@ -342,7 +342,7 @@ TRANSLATIONS = {
         "patch_notes_title": "📋 Modrinth Mod Manager — Notes de Version",
     },
     "de": {
-        "app_title": "Modrinth Mod Manager v1.1.1",
+        "app_title": "Modrinth Mod Manager v1.2",
         "app_subtitle": "Minecraft Content Hub und Installer",
         "tab_mods": "⚙ Mods",
         "tab_resourcepacks": "🎨 Ressourcenpakete",
@@ -390,7 +390,7 @@ TRANSLATIONS = {
         "modal_btn_download": "⬇ Diesen Eintrag herunterladen",
         "modal_btn_web": "🌐 Auf Modrinth ansehen",
         "modal_tech_specs": "Technische Details",
-        "welcome_title": "Willkommen beim Modrinth Mod Manager v1.1.1",
+        "welcome_title": "Willkommen beim Modrinth Mod Manager v1.2",
         "welcome_desc": "Ihr Hochgeschwindigkeits-Manager für Minecraft Fabric! Über 20.000 Mods, Texturen, Datenpakete, Shader und Modpacks mit blitzschnellem SQLite-Cache.",
         "welcome_net_online": "● Internet verbunden: Live-Synchronisierung aktiv",
         "welcome_net_offline": "○ Offline-Modus: Schneller lokaler Katalog aktiv",
@@ -410,7 +410,7 @@ TRANSLATIONS = {
         "patch_notes_title": "📋 Modrinth Mod Manager — Patchnotizen",
     },
     "es": {
-        "app_title": "Modrinth Mod Manager v1.1.1",
+        "app_title": "Modrinth Mod Manager v1.2",
         "app_subtitle": "Centro de Contenidos e Instalador de Minecraft",
         "tab_mods": "⚙ Mods",
         "tab_resourcepacks": "🎨 Paquetes de Recursos",
@@ -458,7 +458,7 @@ TRANSLATIONS = {
         "modal_btn_download": "⬇ Descargar Este Elemento",
         "modal_btn_web": "🌐 Ver en Modrinth",
         "modal_tech_specs": "Especificaciones Técnicas",
-        "welcome_title": "Bienvenido a Modrinth Mod Manager v1.1.1",
+        "welcome_title": "Bienvenido a Modrinth Mod Manager v1.2",
         "welcome_desc": "Tu gestor de alto rendimiento para Minecraft Fabric. Más de 20.000 Mods, Texturas, Datapacks, Shaders y Modpacks con carga ultrarrápida SQLite.",
         "welcome_net_online": "● Conectado a Internet: Sincronización en vivo activa",
         "welcome_net_offline": "○ Modo sin conexión: Utilizando catálogo local rápido",
@@ -478,7 +478,7 @@ TRANSLATIONS = {
         "patch_notes_title": "📋 Modrinth Mod Manager — Notas del Parche",
     },
     "tr": {
-        "app_title": "Modrinth Mod Manager v1.1.1",
+        "app_title": "Modrinth Mod Manager v1.2",
         "app_subtitle": "Yüksek Performanslı Minecraft İçerik Merkezi ve Yükleyici",
         "tab_mods": "⚙ Modlar",
         "tab_resourcepacks": "🎨 Kaynak Paketleri",
@@ -526,7 +526,7 @@ TRANSLATIONS = {
         "modal_btn_download": "⬇ Bu Öğeyi İndir",
         "modal_btn_web": "🌐 Modrinth Sayfasını Aç",
         "modal_tech_specs": "Teknik Özellikler & Bilgiler",
-        "welcome_title": "Modrinth Mod Manager v1.1.1'e Hoş Geldiniz",
+        "welcome_title": "Modrinth Mod Manager v1.2'ye Hoş Geldiniz",
         "welcome_desc": "Fabric Minecraft için geliştirilmiş en kapsamlı içerik aracı! 20.000'den fazla doğrulanmış Mod, Kaynak Paketi, Veri Paketi, Shader ve Modpack'i keşfedin, SQLite altyapısıyla donmadan anında açın ve tek tıkla kurun.",
         "welcome_net_online": "● İnternet Bağlantısı Aktif: Canlı Senkronizasyon Açık",
         "welcome_net_offline": "○ Çevrimdışı Mod: Hızlı Yerel Katalog Kullanılıyor",
@@ -550,6 +550,13 @@ TRANSLATIONS = {
 # Full Patch Notes in all 6 languages
 PATCH_NOTES = {
     "tr": """📋 Modrinth Mod Manager — Yama Notları (Patch Notes)
+
+🚀 v1.2 — Çoklu Sürüm Desteği (01.11.2026)
+• 5 Farklı Minecraft Sürüm Desteği: Fabric 26.3, 26.2, 26.1.2, 26.1.1 ve 26.1 sürümleri eksiksiz entegre edildi.
+• Sağ Üst Sürüm Değiştirici: Sağ üst menüdeki açılır kutudan istenen Minecraft sürümü anında seçilebilir, katalog ve sayfa sayıları sıfır gecikmeyle güncellenir.
+• Tüm Kategorilerde Sürüm Uyumluluğu: Modlar, Kaynak Paketleri, Veri Paketleri, Shader'lar ve Modpack'ler seçilen sürüme göre anlık filtrelenir.
+• Sürüme Duyarlı İndirme & Bağımlılık Çözücü: Seçili sürüm hangisi ise modlar ve gereken bağımlılıklar (dependencies) doğrudan o Minecraft sürümüne uygun dosyalarla indirilir.
+• Sürüm Bazlı Çevrimiçi Senkronizasyon: Ağ üzerinden senkronizasyon yapıldığında seçili sürümün Modrinth API verileri denetlenir ve güncellenir.
 
 🚀 v1.1.1 — Yama & Hata Düzeltme Güncellemesi (31.10.2026)
 • Yama notları ve sürüm geçmişindeki biçimlendirme ve içerik görüntüleme hataları giderildi.
@@ -635,6 +642,13 @@ Yeni Başlatıcı (start.bat):
 • Klasör Seçimi: Kullanıcının seçtiği klasöre .jar dosyalarının indirilmesi sağlandı.
 """,
     "en": """📋 Modrinth Mod Manager — Patch Notes
+
+🚀 v1.2 — Multi-Version Architecture Update (01.11.2026)
+• 5 Minecraft Game Versions Supported: Full Fabric support across 26.3, 26.2, 26.1.2, 26.1.1, and 26.1.
+• Top-Right Version Switcher: Instant version selector ComboBox added to the header; switching versions dynamically updates the catalog and page count with zero lag.
+• Version Filtering Across All 5 Categories: Mods, Resource Packs, Data Packs, Shaders, and Modpacks are filtered according to the selected Minecraft version.
+• Version-Aware Downloads & Dependencies: 1-click downloads and automatic dependency resolution now target the exact selected Minecraft version.
+• Version-Specific Online Sync: Live synchronization queries and refreshes catalog data for the currently active version.
 
 🚀 v1.1.1 — Hotfix & Patch Notes Update (31.10.2026)
 • Resolved formatting, version alignment, and content display errors in Patch Notes.

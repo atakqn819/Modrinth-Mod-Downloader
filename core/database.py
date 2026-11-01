@@ -147,12 +147,16 @@ class Database:
         conn.commit()
         return len(data)
 
-    def query_items(self, project_type, search="", category="All", sort_by="downloads", sort_desc=True, limit=100, offset=0):
+    def query_items(self, project_type, search="", category="All", sort_by="downloads", sort_desc=True, limit=100, offset=0, version=None):
         conn = self.get_conn()
         cur = conn.cursor()
 
         where_clauses = ["project_type = ?"]
         params = [project_type]
+
+        if version and project_type != "shader":
+            where_clauses.append("versions LIKE ?")
+            params.append(f'%"{version}"%')
 
         if category and category not in ("All", "Tümü", "Tous", "Alle", "Todos", "Tutti", "All Categories"):
             where_clauses.append("(primary_category = ? OR categories LIKE ?)")
@@ -198,12 +202,16 @@ class Database:
             result.append(d)
         return result
 
-    def get_count(self, project_type, search="", category="All"):
+    def get_count(self, project_type, search="", category="All", version=None):
         conn = self.get_conn()
         cur = conn.cursor()
 
         where_clauses = ["project_type = ?"]
         params = [project_type]
+
+        if version and project_type != "shader":
+            where_clauses.append("versions LIKE ?")
+            params.append(f'%"{version}"%')
 
         if category and category not in ("All", "Tümü", "Tous", "Alle", "Todos", "Tutti", "All Categories"):
             where_clauses.append("(primary_category = ? OR categories LIKE ?)")
@@ -218,14 +226,20 @@ class Database:
         cur.execute(f"SELECT COUNT(*) FROM items WHERE {where_sql}", params)
         return cur.fetchone()[0]
 
-    def get_categories(self, project_type):
+    def get_categories(self, project_type, version=None):
         conn = self.get_conn()
         cur = conn.cursor()
-        cur.execute("""
+        where_clauses = ["project_type = ?", "primary_category IS NOT NULL", "primary_category != ''"]
+        params = [project_type]
+        if version and project_type != "shader":
+            where_clauses.append("versions LIKE ?")
+            params.append(f'%"{version}"%')
+        where_sql = " AND ".join(where_clauses)
+        cur.execute(f"""
             SELECT DISTINCT primary_category FROM items
-            WHERE project_type = ? AND primary_category IS NOT NULL AND primary_category != ''
+            WHERE {where_sql}
             ORDER BY primary_category ASC
-        """, (project_type,))
+        """, params)
         return [r[0] for r in cur.fetchall()]
 
     def get_item(self, slug, project_type=None):

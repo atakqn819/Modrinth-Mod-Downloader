@@ -1,10 +1,11 @@
 @echo off
 chcp 65001 >nul
-title Modrinth Mod Manager v1.1.1
+title Modrinth Mod Manager v1.2
 cls
 echo =======================================================
-echo    Modrinth Mod Manager v1.1.1 (Official Release)
-echo    Fabric MC 26.3 · Mods · Textures · Shaders · Packs
+echo    Modrinth Mod Manager v1.2 (Official Release)
+echo    Fabric MC 26.3, 26.2, 26.1.2, 26.1.1, 26.1
+echo    Mods · Textures · Datapacks · Shaders · Modpacks
 echo =======================================================
 echo.
 echo [1/2] Checking Python environment...

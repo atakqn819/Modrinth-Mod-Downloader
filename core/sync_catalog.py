@@ -29,8 +29,8 @@ CONFIG = [
     ("modpack", 8),
 ]
 
-def sync_all(callback=None):
-    api = ModrinthAPI()
+def sync_all(gv="26.3", callback=None):
+    api = ModrinthAPI(gv=gv)
     db = Database.get_instance()
     
     total_added = 0
