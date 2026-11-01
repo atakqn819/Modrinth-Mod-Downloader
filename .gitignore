@@ -1,0 +1,9 @@
+# Python geçici dosyaları
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Yerel veritabanı ve ayarlar
+*.db
+*.sqlite3
+.env
