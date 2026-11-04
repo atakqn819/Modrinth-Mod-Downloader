@@ -1,16 +1,29 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
+Modrinth Mod Manager v2.0 (Official Release)
+==============================================
+High-Performance Minecraft Content Hub & Installer
+- Multi-Version Fabric Support: 1.21.11 down to 1.21 & 26.3 down to 26.1
+=======
 Modrinth Mod Manager v1.2 (Official Release)
 ==============================================
 High-Performance Minecraft Content Hub & Installer
 - Multi-Version Fabric Support: 26.3, 26.2, 26.1.2, 26.1.1, 26.1
+>>>>>>> 2e3b71180319f8218b93d87a435c38a3ac76415c
 - 5 Content Types: Mods, Resource Packs, Data Packs, Shaders, Modpacks (20,000+ items)
-- 5 Distinct Themes: Modern Emerald, Classic Dark, Midnight Cyber, Amethyst Purple, Solar Light
+- 5 Distinct Themes: Modern Emerald, Classic Dark, Midnight Cyber, Amethyst Purple, Crimson Magma
+- Custom Modpack & Profile Creator: Export official .mrpack archives or save custom local profiles
+- Procedural Sound Effects Engine: Zero-latency audio with mute/unmute toggle
 - 6 Languages: English (default), Italian, French, German, Spanish, Turkish
-- Instant SQLite WAL caching & zero-lag pagination
+- Instant SQLite WAL caching with 256MB mmap & connection pooling
 - Auto directory detection for Mods, Packs, Shaders, Datapacks (Manual for Modpacks)
 - Double-click full overview & direct 1-click download
+<<<<<<< HEAD
+- Interactive 5-step tutorial & comprehensive v2.0 Patch Notes
+=======
 - Interactive 5-step tutorial & comprehensive v1.2 Patch Notes
+>>>>>>> 2e3b71180319f8218b93d87a435c38a3ac76415c
 """
 
 import sys
@@ -38,12 +51,23 @@ from core.path_detector import get_auto_path, ensure_directory
 from core.modrinth_api import ModrinthAPI
 from ui.themes import THEMES, DEFAULT_THEME
 from ui.translations import i18n, LANGUAGES
+from core.sound_engine import sound
 from ui.gui_components import (
-    ItemDetailModal, WelcomeModal, TutorialModal, PatchNotesModal
+    ItemDetailModal, WelcomeModal, TutorialModal, PatchNotesModal,
+    ModpackCreatorModal, SavedProfilesModal, MinecraftToolsModal
 )
 
+<<<<<<< HEAD
+SUPPORTED_VERSIONS = [
+    "1.21.11", "1.21.10", "1.21.9", "1.21.8", "1.21.7", "1.21.6",
+    "1.21.5", "1.21.4", "1.21.3", "1.21.2", "1.21.1", "1.21",
+    "26.3", "26.2", "26.1.2", "26.1.1", "26.1"
+]
+DEFAULT_GV = "1.21.1"
+=======
 SUPPORTED_VERSIONS = ["26.3", "26.2", "26.1.2", "26.1.1", "26.1"]
 DEFAULT_GV = "26.3"
+>>>>>>> 2e3b71180319f8218b93d87a435c38a3ac76415c
 DEFAULT_LOADER = "fabric"
 PAGE_SIZE = 100
 
@@ -106,6 +130,10 @@ class ModrinthApp(ctk.CTk):
         self.current_theme_name = saved_theme
         self.theme = THEMES[saved_theme]
 
+        # Sound effects setting
+        saved_sound = self.db.get_setting("sound_enabled", "true")
+        sound.set_enabled(saved_sound == "true")
+
         ctk.set_appearance_mode(self.theme["appearance"])
         ctk.set_default_color_theme("green")
 
@@ -137,10 +165,6 @@ class ModrinthApp(ctk.CTk):
         self._style_tree()
         self._build_ui()
         self._load_all_tabs()
-
-        show_welcome = self.db.get_setting("show_welcome", "true")
-        if show_welcome == "true":
-            self.after(300, self._show_welcome_screen)
 
         if self.is_online:
             threading.Thread(target=self._background_check_updates, daemon=True).start()
@@ -190,7 +214,11 @@ class ModrinthApp(ctk.CTk):
         left.pack(side="left")
         self.logo_lbl = ctk.CTkLabel(left, text="⛏  Modrinth Mod Manager", font=("Segoe UI", 18, "bold"), text_color=self.theme["accent"])
         self.logo_lbl.pack(side="left")
+<<<<<<< HEAD
+        self.ver_tag = ctk.CTkLabel(left, text="  v2.0  ", font=("Segoe UI", 10, "bold"), fg_color=self.theme["elevated"], text_color=self.theme["accent_tx"], corner_radius=6)
+=======
         self.ver_tag = ctk.CTkLabel(left, text="  v1.2  ", font=("Segoe UI", 10, "bold"), fg_color=self.theme["elevated"], text_color=self.theme["accent_tx"], corner_radius=6)
+>>>>>>> 2e3b71180319f8218b93d87a435c38a3ac76415c
         self.ver_tag.pack(side="left", padx=(8, 12))
 
         status_txt = "● Online" if self.is_online else "○ Offline"
@@ -202,55 +230,93 @@ class ModrinthApp(ctk.CTk):
         right = ctk.CTkFrame(inn, fg_color="transparent")
         right.pack(side="right")
 
+        # Audio Sound Effects Toggle Button
+        sound_icon = "🔊" if sound.is_enabled() else "🔇"
+        self.sound_btn = ctk.CTkButton(
+            right, text=sound_icon, width=38, height=30, corner_radius=8,
+            font=("Segoe UI", 12), fg_color=self.theme["elevated"], hover_color=self.theme["hover"],
+            text_color=self.theme["txt"], command=self._toggle_sound
+        )
+        self.sound_btn.pack(side="left", padx=(0, 6))
+
+        # Modpack Creator & Saved Profiles
+        self.create_pack_btn = ctk.CTkButton(
+            right, text=f"📦 {i18n.t('btn_create_modpack')}", width=120, height=30, corner_radius=8,
+            font=("Segoe UI", 10, "bold"), fg_color=self.theme["elevated"], hover_color=self.theme["hover"],
+            text_color=self.theme["accent"], command=self._open_modpack_creator
+        )
+        self.create_pack_btn.pack(side="left", padx=(0, 6))
+
+        self.profiles_btn = ctk.CTkButton(
+            right, text=f"📋 {i18n.t('btn_saved_profiles')}", width=110, height=30, corner_radius=8,
+            font=("Segoe UI", 10), fg_color=self.theme["elevated"], hover_color=self.theme["hover"],
+            text_color=self.theme["txt2"], command=self._open_saved_profiles
+        )
+        self.profiles_btn.pack(side="left", padx=(0, 6))
+
+        self.tools_btn = ctk.CTkButton(
+            right, text=f"🛠 {i18n.t('btn_tools_suite')}", width=95, height=30, corner_radius=8,
+            font=("Segoe UI", 10), fg_color=self.theme["elevated"], hover_color=self.theme["hover"],
+            text_color=self.theme["txt2"], command=self._open_tools_suite
+        )
+        self.tools_btn.pack(side="left", padx=(0, 8))
+
         # Theme Selector ComboBox (5 Themes)
         ctk.CTkLabel(right, text=i18n.t("theme_selector_label"), font=("Segoe UI", 10), text_color=self.theme["txt3"]).pack(side="left", padx=(0, 4))
         self.theme_menu = ctk.CTkComboBox(
-            right, values=list(THEMES.keys()), width=140, height=30, corner_radius=8,
+            right, values=list(THEMES.keys()), width=135, height=30, corner_radius=8,
             font=("Segoe UI", 10), fg_color=self.theme["elevated"], border_color=self.theme["border"],
             dropdown_fg_color=self.theme["card"], dropdown_hover_color=self.theme["hover"],
             dropdown_text_color=self.theme["txt"], state="readonly", command=self._on_theme_change
         )
         self.theme_menu.set(self.current_theme_name)
-        self.theme_menu.pack(side="left", padx=(0, 8))
+        self.theme_menu.pack(side="left", padx=(0, 6))
 
         # Language dropdown (6 Languages)
         lang_names = [name for code, name in LANGUAGES]
         current_lang_name = next((name for code, name in LANGUAGES if code == self.current_lang), "English")
         self.lang_dropdown = ctk.CTkComboBox(
-            right, values=lang_names, width=110, height=30, corner_radius=8,
+            right, values=lang_names, width=105, height=30, corner_radius=8,
             font=("Segoe UI", 10), fg_color=self.theme["elevated"], border_color=self.theme["border"],
             dropdown_fg_color=self.theme["card"], dropdown_hover_color=self.theme["hover"],
             dropdown_text_color=self.theme["txt"], state="readonly", command=self._on_language_change
         )
         self.lang_dropdown.set(current_lang_name)
-        self.lang_dropdown.pack(side="left", padx=(0, 8))
+        self.lang_dropdown.pack(side="left", padx=(0, 6))
 
         # Action Buttons
         self.sync_btn = ctk.CTkButton(
-            right, text=f"🔄 {i18n.t('btn_fetch_all')}", width=125, height=30, corner_radius=8,
+            right, text=f"🔄 {i18n.t('btn_fetch_all')}", width=115, height=30, corner_radius=8,
             font=("Segoe UI", 10, "bold"), fg_color=self.theme["elevated"], hover_color=self.theme["hover"],
             text_color=self.theme["accent"], command=self._start_online_sync
         )
         self.sync_btn.pack(side="left", padx=(0, 6))
 
         self.pn_btn = ctk.CTkButton(
-            right, text=f"📜 {i18n.t('btn_patch_notes')}", width=110, height=30, corner_radius=8,
+            right, text=f"📜 {i18n.t('btn_patch_notes')}", width=105, height=30, corner_radius=8,
             font=("Segoe UI", 10), fg_color=self.theme["elevated"], hover_color=self.theme["hover"],
             text_color=self.theme["txt"], command=self._open_patch_notes
         )
         self.pn_btn.pack(side="left", padx=(0, 6))
 
         self.tut_btn = ctk.CTkButton(
-            right, text=f"❓ {i18n.t('btn_tutorial')}", width=95, height=30, corner_radius=8,
+            right, text=f"❓ {i18n.t('btn_tutorial')}", width=88, height=30, corner_radius=8,
             font=("Segoe UI", 10), fg_color=self.theme["elevated"], hover_color=self.theme["hover"],
             text_color=self.theme["txt"], command=self._open_tutorial
         )
         self.tut_btn.pack(side="left", padx=(0, 6))
 
+<<<<<<< HEAD
+        # Version selector ComboBox (Fabric 1.21.x and 26.x)
+        ctk.CTkLabel(right, text="MC", font=("Segoe UI", 10, "bold"), text_color=self.theme["txt3"]).pack(side="left", padx=(4, 4))
+        self.ver_entry = ctk.CTkComboBox(
+            right, values=SUPPORTED_VERSIONS, width=96, height=30, corner_radius=8,
+=======
         # Version selector ComboBox (Fabric 26.3, 26.2, 26.1.2, 26.1.1, 26.1)
         ctk.CTkLabel(right, text="MC", font=("Segoe UI", 10, "bold"), text_color=self.theme["txt3"]).pack(side="left", padx=(4, 4))
         self.ver_entry = ctk.CTkComboBox(
             right, values=SUPPORTED_VERSIONS, width=82, height=30, corner_radius=8,
+>>>>>>> 2e3b71180319f8218b93d87a435c38a3ac76415c
             font=("Segoe UI", 10, "bold"), fg_color=self.theme["elevated"], border_color=self.theme["border"],
             dropdown_fg_color=self.theme["card"], dropdown_hover_color=self.theme["hover"],
             dropdown_text_color=self.theme["txt"], state="readonly", command=self._on_version_change
@@ -261,7 +327,7 @@ class ModrinthApp(ctk.CTk):
         self.loader_badge = ctk.CTkLabel(
             right, text=" FABRIC ", font=("Segoe UI", 10, "bold"),
             fg_color=self.theme["accent"],
-            text_color="#000000" if self.theme["name"] == "Solar Light" else "#ffffff",
+            text_color="#ffffff",
             corner_radius=6
         )
         self.loader_badge.pack(side="left")
@@ -356,6 +422,12 @@ class ModrinthApp(ctk.CTk):
             bar2, text=i18n.t("btn_import"), width=90, height=28, corner_radius=6,
             font=("Segoe UI", 10), fg_color=self.theme["elevated"], hover_color=self.theme["hover"],
             text_color=self.theme["txt2"], command=lambda: self._import_json(tc)
+        ).pack(side="left", padx=(0, 6))
+
+        ctk.CTkButton(
+            bar2, text=f"📦 {i18n.t('btn_create_modpack')}", width=120, height=28, corner_radius=6,
+            font=("Segoe UI", 10, "bold"), fg_color=self.theme["elevated"], hover_color=self.theme["hover"],
+            text_color=self.theme["accent"], command=lambda: self._open_modpack_creator_for_tab(tc)
         ).pack(side="left", padx=(0, 10))
 
         hint_text = "🖱 Double-Click: Details & Download · Drag: Multi-Select · Shift: Range · Right-Click: Menu"
@@ -475,7 +547,7 @@ class ModrinthApp(ctk.CTk):
         tc.dl_btn = ctk.CTkButton(
             r2, text=f"⬇  {dl_text}", width=210, height=36, corner_radius=8,
             font=("Segoe UI", 12, "bold"), fg_color=self.theme["accent"], hover_color=self.theme["accent_h"],
-            text_color="#000000" if self.theme["name"] == "Solar Light" else "#ffffff",
+            text_color="#ffffff",
             command=lambda: self._start_download(tc)
         )
         tc.dl_btn.pack(side="left", padx=(0, 8))
@@ -522,7 +594,11 @@ class ModrinthApp(ctk.CTk):
         self.status_lbl = ctk.CTkLabel(self.sb, text=i18n.t("status_ready"), font=("Segoe UI", 9), text_color=self.theme["txt3"])
         self.status_lbl.pack(side="left", padx=16)
 
+<<<<<<< HEAD
+        ctk.CTkLabel(self.sb, text="Modrinth Mod Manager v2.0  ·  Official Release", font=("Segoe UI", 9), text_color=self.theme["txt3"]).pack(side="right", padx=16)
+=======
         ctk.CTkLabel(self.sb, text="Modrinth Mod Manager v1.2  ·  Official Release", font=("Segoe UI", 9), text_color=self.theme["txt3"]).pack(side="right", padx=16)
+>>>>>>> 2e3b71180319f8218b93d87a435c38a3ac76415c
 
     def _st(self, msg):
         self.status_lbl.configure(text=msg)
@@ -530,6 +606,10 @@ class ModrinthApp(ctk.CTk):
     # ─── Version, Theme & Language Switching ─────────────────────────────────
     def _on_version_change(self, selected_gv):
         if selected_gv in SUPPORTED_VERSIONS and selected_gv != self.current_gv:
+<<<<<<< HEAD
+            sound.play_toggle()
+=======
+>>>>>>> 2e3b71180319f8218b93d87a435c38a3ac76415c
             self.current_gv = selected_gv
             self.api.gv = selected_gv
             self.db.set_setting("game_version", selected_gv)
@@ -543,8 +623,13 @@ class ModrinthApp(ctk.CTk):
                 tc.cat_menu.configure(values=cat_labels)
                 tc.cat_menu.set(i18n.t("all_categories"))
                 self._render_page(tc)
+<<<<<<< HEAD
+
+=======
+>>>>>>> 2e3b71180319f8218b93d87a435c38a3ac76415c
     def _on_theme_change(self, theme_name):
         if theme_name in THEMES and theme_name != self.current_theme_name:
+            sound.play_toggle()
             self.current_theme_name = theme_name
             self.theme = THEMES[theme_name]
             self.db.set_setting("theme", theme_name)
@@ -556,8 +641,14 @@ class ModrinthApp(ctk.CTk):
         self.hdr.configure(fg_color=self.theme["surface"])
         self.logo_lbl.configure(text_color=self.theme["accent"])
         self.ver_tag.configure(fg_color=self.theme["elevated"], text_color=self.theme["accent_tx"])
+        self.sound_btn.configure(fg_color=self.theme["elevated"], text_color=self.theme["txt"])
+        self.create_pack_btn.configure(fg_color=self.theme["elevated"], text_color=self.theme["accent"])
+        self.profiles_btn.configure(fg_color=self.theme["elevated"], text_color=self.theme["txt2"])
+        self.tools_btn.configure(fg_color=self.theme["elevated"], text_color=self.theme["txt2"])
         self.sync_btn.configure(fg_color=self.theme["elevated"], text_color=self.theme["accent"])
-        self.loader_badge.configure(fg_color=self.theme["accent"], text_color="#000000" if self.theme["name"] == "Solar Light" else "#ffffff")
+        self.pn_btn.configure(fg_color=self.theme["elevated"], text_color=self.theme["txt"])
+        self.tut_btn.configure(fg_color=self.theme["elevated"], text_color=self.theme["txt"])
+        self.loader_badge.configure(fg_color=self.theme["accent"], text_color="#ffffff")
         
         self.tabview.configure(
             fg_color=self.theme["bg"],
@@ -574,6 +665,7 @@ class ModrinthApp(ctk.CTk):
     def _on_language_change(self, selected_lang_name):
         code = next((c for c, n in LANGUAGES if n == selected_lang_name), "en")
         if code != self.current_lang:
+            sound.play_toggle()
             self.current_lang = code
             i18n.set_language(code)
             self.db.set_setting("language", code)
@@ -581,6 +673,9 @@ class ModrinthApp(ctk.CTk):
 
     def _refresh_language_texts(self):
         self.title(i18n.t("app_title"))
+        self.create_pack_btn.configure(text=f"📦 {i18n.t('btn_create_modpack')}")
+        self.profiles_btn.configure(text=f"📋 {i18n.t('btn_saved_profiles')}")
+        self.tools_btn.configure(text=f"🛠 {i18n.t('btn_tools_suite')}")
         self.sync_btn.configure(text=f"🔄 {i18n.t('btn_fetch_all')}")
         self.pn_btn.configure(text=f"📜 {i18n.t('btn_patch_notes')}")
         self.tut_btn.configure(text=f"❓ {i18n.t('btn_tutorial')}")
@@ -596,11 +691,103 @@ class ModrinthApp(ctk.CTk):
     def _show_welcome_screen(self):
         WelcomeModal(self, self.theme, on_start=None, on_open_tutorial=self._open_tutorial, is_online=self.is_online)
 
+    def _toggle_sound(self):
+        enabled = sound.toggle()
+        icon = "🔊" if enabled else "🔇"
+        self.sound_btn.configure(text=icon)
+        self.db.set_setting("sound_enabled", "true" if enabled else "false")
+        status_str = "Enabled" if enabled else "Muted"
+        self._st(f"Audio effects: {status_str}")
+        if enabled:
+            sound.play_toggle()
+
     def _open_tutorial(self):
+        sound.play_click()
         TutorialModal(self, self.theme)
 
     def _open_patch_notes(self):
+        sound.play_click()
         PatchNotesModal(self, self.theme)
+
+    def _open_modpack_creator(self):
+        sound.play_click()
+        all_selected = []
+        for tc in self.tabs.values():
+            for s in tc.selected_slugs:
+                item = self.db.get_item(s, project_type=tc.project_type)
+                if item and item not in all_selected:
+                    all_selected.append(item)
+        ModpackCreatorModal(self, initial_items=all_selected, theme=self.theme, current_gv=self.current_gv)
+
+    def _open_modpack_creator_for_tab(self, tc):
+        sound.play_click()
+        tab_selected = []
+        for s in tc.selected_slugs:
+            item = self.db.get_item(s, project_type=tc.project_type)
+            if item:
+                tab_selected.append(item)
+        ModpackCreatorModal(self, initial_items=tab_selected, theme=self.theme, current_gv=self.current_gv)
+
+    def _open_saved_profiles(self):
+        sound.play_click()
+        SavedProfilesModal(self, self.theme, on_apply=self._apply_loaded_profile)
+
+    def _apply_loaded_profile(self, profile):
+        try:
+            profile_gv = profile.get("game_version")
+            if profile_gv and profile_gv in SUPPORTED_VERSIONS and profile_gv != self.current_gv:
+                self.ver_entry.set(profile_gv)
+                self._on_version_change(profile_gv)
+
+            for tc in self.tabs.values():
+                tc.selected_slugs.clear()
+
+            items = profile.get("items", [])
+            selected_count = 0
+            for item in items:
+                slug = item.get("slug")
+                ptype = item.get("project_type", "mod")
+                if ptype in self.tabs and slug:
+                    self.tabs[ptype].selected_slugs.add(slug)
+                    selected_count += 1
+
+            for tc in self.tabs.values():
+                self._refresh_tags(tc)
+
+            sound.play_success()
+            prof_name = profile.get("name", "Custom Profile")
+            self._log(f"📋 Loaded profile '{prof_name}' with {selected_count} items (MC {self.current_gv}).")
+            self._st(f"Loaded profile '{prof_name}' ({selected_count} items)")
+            messagebox.showinfo("Profile Loaded", f"Successfully loaded profile '{prof_name}' with {selected_count} items!")
+        except Exception as e:
+            sound.play_error()
+            messagebox.showerror("Error", f"Failed to apply profile: {e}")
+
+    def _open_tools_suite(self):
+        sound.play_click()
+        MinecraftToolsModal(self, self.theme, current_gv=self.current_gv, on_apply_preset=self._handle_apply_preset)
+
+    def _handle_apply_preset(self, slugs, name):
+        tc = self.tabs["mod"]
+        tc.selected_slugs.clear()
+        found = 0
+        for s in slugs:
+            item = self.db.get_item(s, project_type="mod")
+            if item:
+                tc.selected_slugs.add(s)
+                found += 1
+            else:
+                matches = self.db.query_items("mod", search=s, limit=1, version=self.current_gv)
+                if matches:
+                    tc.selected_slugs.add(matches[0]["slug"])
+                    found += 1
+
+        self.tabview.set(i18n.t(tc.label_key))
+        self._refresh_tags(tc)
+        sound.play_success()
+        self._log(f"⚡ Applied preset '{name}': {found} mods selected in Mods tab.")
+        self._st(f"Applied preset: {name} ({found} mods selected)")
+        messagebox.showinfo("Preset Applied", f"Selected {found} mods from '{name}' in the Mods tab!\nYou can now click 'Download Selected' to install them.")
 
     # ─── Data Loading & Pagination ───────────────────────────────────────────
     def _load_all_tabs(self):
@@ -662,6 +849,7 @@ class ModrinthApp(ctk.CTk):
     def _page_change(self, tc, delta):
         new_page = tc.page + delta
         if 1 <= new_page <= tc.total_pages:
+            sound.play_click()
             tc.page = new_page
             self._render_page(tc)
 
@@ -790,6 +978,7 @@ class ModrinthApp(ctk.CTk):
             tc.selected_slugs.discard(slug)
         else:
             tc.selected_slugs.add(slug)
+        sound.play_select()
         self._tag_single(tc, slug)
         tc.sel_lbl.configure(text=str(len(tc.selected_slugs)))
 
@@ -819,15 +1008,18 @@ class ModrinthApp(ctk.CTk):
             return
         for i in range(min(ia, ib), max(ia, ib) + 1):
             tc.selected_slugs.add(items[i])
+        sound.play_select()
         self._refresh_tags(tc)
 
     def _select_all_page(self, tc):
         for slug in self._get_tree_items(tc):
             tc.selected_slugs.add(slug)
+        sound.play_select()
         self._refresh_tags(tc)
 
     def _deselect_all(self, tc):
         tc.selected_slugs.clear()
+        sound.play_click()
         self._refresh_tags(tc)
 
     # ─── Double Click & Context Menu ─────────────────────────────────────────
@@ -836,6 +1028,7 @@ class ModrinthApp(ctk.CTk):
         if slug:
             item_data = self.db.get_item(slug, project_type=tc.project_type)
             if item_data:
+                sound.play_click()
                 ItemDetailModal(self, item_data, self.theme, on_download=lambda m: self._download_single(tc, m))
         return "break"
 
@@ -849,6 +1042,7 @@ class ModrinthApp(ctk.CTk):
         if tc.context_slug:
             item_data = self.db.get_item(tc.context_slug, project_type=tc.project_type)
             if item_data:
+                sound.play_click()
                 ItemDetailModal(self, item_data, self.theme, on_download=lambda m: self._download_single(tc, m))
 
     def _ctx_open_web(self, tc):
@@ -906,14 +1100,17 @@ class ModrinthApp(ctk.CTk):
     # ─── Download & Installation Logic ───────────────────────────────────────
     def _cancel_download(self):
         self.cancel_flag = True
+        sound.play_error()
         self._st("⛔ Cancelling operations...")
 
     def _download_single(self, tc, item):
         dest_dir = tc.path_entry.get().strip()
         if not dest_dir:
+            sound.play_error()
             messagebox.showwarning("Warning", "Please select a target folder first.")
             return
         ensure_directory(dest_dir)
+        sound.play_start()
         self._log(f"⬇ Downloading single item: {item.get('title')} → {dest_dir}")
         threading.Thread(target=self._download_worker, args=(tc, [item], dest_dir), daemon=True).start()
 
@@ -921,11 +1118,13 @@ class ModrinthApp(ctk.CTk):
         if self.downloading:
             return
         if not tc.selected_slugs:
+            sound.play_error()
             messagebox.showwarning("Warning", "No items selected! Check at least one item.")
             return
 
         dest_dir = tc.path_entry.get().strip()
         if not dest_dir:
+            sound.play_error()
             messagebox.showwarning("Warning", "Please select a target destination folder.")
             return
 
@@ -951,84 +1150,114 @@ class ModrinthApp(ctk.CTk):
         if not confirm:
             return
 
+        sound.play_start()
         self.downloading = True
         self.cancel_flag = False
         tc.dl_btn.configure(state="disabled")
         tc.cancel_btn.configure(state="normal")
         tc.pbar.set(0)
 
-        self._log(f"\n⬇ Starting download of {len(selected_items)} {tc.project_type}s to: {dest_dir}")
+        self._log(f"\n⬇ Starting parallel multi-threaded download of {len(selected_items)} {tc.project_type}s to: {dest_dir}")
         threading.Thread(target=self._download_worker, args=(tc, selected_items, dest_dir), daemon=True).start()
 
     def _download_worker(self, tc, items, dest_dir):
+        import concurrent.futures
         total = len(items)
-        ok = fail = deps = skip = 0
+        counters = {"ok": 0, "fail": 0, "deps": 0, "skip": 0, "processed": 0}
         done_ids = set()
+        lock = threading.Lock()
 
         def log(msg):
             self.after(0, self._log, msg)
 
-        for i, item in enumerate(items, 1):
+        def process_item(item):
             if self.cancel_flag:
-                log(f"\n⛔ Cancelled by user. {ok} completed.")
-                break
+                return
 
             title = item.get("title", item.get("slug"))
             pid = item.get("project_id", item.get("slug"))
-            self.after(0, tc.pbar.set, (i - 1) / total)
-            self.after(0, tc.prog_lbl.configure, {"text": f"{i}/{total}"})
-            self.after(0, self._st, f"⬇ [{i}/{total}] {title}")
 
             ver = self.api.get_compatible_version(pid, project_type=tc.project_type)
             if not ver:
                 log(f"  ⚠ {title}: No compatible version found.")
-                fail += 1
-                continue
+                with lock:
+                    counters["fail"] += 1
+                    counters["processed"] += 1
+                    p = counters["processed"]
+                    self.after(0, tc.pbar.set, p / total)
+                    self.after(0, tc.prog_lbl.configure, {"text": f"{p}/{total}"})
+                return
 
             pf = ModrinthAPI.get_primary_file(ver)
             if not pf:
-                fail += 1
-                continue
+                with lock:
+                    counters["fail"] += 1
+                    counters["processed"] += 1
+                    p = counters["processed"]
+                    self.after(0, tc.pbar.set, p / total)
+                    self.after(0, tc.prog_lbl.configure, {"text": f"{p}/{total}"})
+                return
 
             dest_file = os.path.join(dest_dir, pf["filename"])
             if os.path.exists(dest_file):
-                ok += 1
-                skip += 1
-                done_ids.add(pid)
+                with lock:
+                    counters["ok"] += 1
+                    counters["skip"] += 1
+                    counters["processed"] += 1
+                    done_ids.add(pid)
+                    p = counters["processed"]
+                    self.after(0, tc.pbar.set, p / total)
+                    self.after(0, tc.prog_lbl.configure, {"text": f"{p}/{total}"})
                 log(f"  ⏭ Already exists: {pf['filename']}")
-                continue
+                return
 
             if self.api.download_file(pf["url"], dest_file):
-                ok += 1
-                done_ids.add(pid)
+                with lock:
+                    counters["ok"] += 1
+                    counters["processed"] += 1
+                    done_ids.add(pid)
+                    p = counters["processed"]
+                    self.after(0, tc.pbar.set, p / total)
+                    self.after(0, tc.prog_lbl.configure, {"text": f"{p}/{total}"})
                 log(f"  ✅ Downloaded: {pf['filename']}")
             else:
-                fail += 1
+                with lock:
+                    counters["fail"] += 1
+                    counters["processed"] += 1
+                    p = counters["processed"]
+                    self.after(0, tc.pbar.set, p / total)
+                    self.after(0, tc.prog_lbl.configure, {"text": f"{p}/{total}"})
                 log(f"  ❌ Failed: {title}")
-                continue
+                return
 
             if tc.project_type == "mod":
                 resolved = self.api.resolve_dependencies(ver, log_cb=log)
                 for dpid, di in resolved.items():
                     if self.cancel_flag:
                         break
-                    if dpid in done_ids:
-                        continue
+                    with lock:
+                        if dpid in done_ids:
+                            continue
+                        done_ids.add(dpid)
                     dep_path = os.path.join(dest_dir, di["filename"])
                     if os.path.exists(dep_path):
-                        done_ids.add(dpid)
                         continue
                     log(f"    📦 Dependency: {di['title']}")
                     if self.api.download_file(di["url"], dep_path):
-                        deps += 1
-                        done_ids.add(dpid)
+                        with lock:
+                            counters["deps"] += 1
                     else:
                         log(f"    ❌ Failed dependency: {di['title']}")
-                    time.sleep(0.08)
 
-            time.sleep(0.1)
+        num_workers = min(4, max(1, total))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+            futures = [executor.submit(process_item, it) for it in items]
+            concurrent.futures.wait(futures)
 
-        self.after(0, self._download_finished, tc, ok, fail, deps, skip, total)
+        if self.cancel_flag:
+            log(f"\n⛔ Operation cancelled by user. {counters['ok']} items completed.")
+
+        self.after(0, self._download_finished, tc, counters["ok"], counters["fail"], counters["deps"], counters["skip"], total)
 
     def _download_finished(self, tc, ok, fail, deps, skip, total):
         self.downloading = False
@@ -1044,9 +1273,14 @@ class ModrinthApp(ctk.CTk):
 
         self._log(f"\n🎉 {summary}\n")
         self._st(f"✅ {summary}")
+        if fail == 0 and ok > 0:
+            sound.play_success()
+        else:
+            sound.play_error()
         messagebox.showinfo("Download Complete", summary)
 
     def _start_modpack_install(self, tc, pack_item, dest_dir):
+        sound.play_start()
         self.downloading = True
         self.cancel_flag = False
         tc.dl_btn.configure(state="disabled")
